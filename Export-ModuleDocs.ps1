@@ -232,5 +232,7 @@ function Export-ModuleDocs {
         <## CUSTOM ACTIONS ##>
             #Remove the extraneous MD files that aren't relevant to this repo
             GCI .\Docs -Exclude $($PSFiles |% { $_.Name.replace(".ps1",".md")}) | rm
-
+            
+            #Remove the Generated Module files
+            GCI -Path $Path -Filter "$Path+"\"+$Prefix+$(Split-Path -Path $Path -Leaf)*" | rm
 }
