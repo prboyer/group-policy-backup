@@ -44,7 +44,10 @@ function Run-GPOBackup {
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [Int]
-        $BackupsToKeep
+        $BackupsToKeep,
+        [Parameter()]
+        [switch]
+        $SkipSysvol
     )
     #Requires -Module ActiveDirectory
     
@@ -101,7 +104,18 @@ function Run-GPOBackup {
 
         # Run the script
         Get-GPLinks -BothReport -Path "$args"
-    } 
+    }
+    
+    # SysVol Backup
+    Write-Information ("{0}`tBegin local background job: SysvolJob - Backs up a copy of important files in Sysvol `n`t`tBacking up Sysvol to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO
+    [String]$DomainController = $(Get-AdDomainController).hostname
+    [String]$Sysvol = "\\$DomainController\Sysvol\$((Get-ADDomain | Select Forest).Forest)"
+
+        # Write out counts of objects in Sysvol dirs
+        Write-Information ("{0}`tRecord counts of objects found in Sysvol:`n`t`tPolicyDefinitions = {1} items `n`t`tScripts = {2} items `n`t`tStarterGPOs = {3} items" -f $LOGDATE,(Get-ChildItem -Path "$Sysvol\Policies\PolicyDefinitions" -Recurse | Measure-Object).Count,(Get-ChildItem -Path "$Sysvol\scripts" -Recurse | Measure-Object).Count,(Get-ChildItem -Path "$Sysvol\StarterGPOs" -Recurse | Measure-Object).Count)
+
+        # Start running the backup job
+        
 
     # Wait for the backup jobs to finish, then zip up the files
     Wait-Job -Job $BackupJob,$LinksJob | Out-Null
