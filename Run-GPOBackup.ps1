@@ -128,7 +128,7 @@ function Run-GPOBackup {
                 $SysvolJob = Start-Job -Name "SysvolJob" -ArgumentList $Sysvol,$Temp -ScriptBlock {
                     try{
                         # Copy the contents from Sysvol (keeping the directory structure the same) to the backup folder
-                        Copy-Item -Path "$($args[0])\Policies\PolicyDefinitions" -Recurse -Destination "$($args[1])\Sysvol\$((Get-ADDomain | Select-Object Forest).Forest)\Policies"
+                        Copy-Item -Path "$($args[0])\Policies\PolicyDefinitions" -Recurse -Destination "$($args[1])\Sysvol\$((Get-ADDomain | Select-Object Forest).Forest)\Policies\PolicyDefinitions\"
                         Copy-Item -Path "$($args[0])\scripts" -Recurse -Destination "$($args[1])\Sysvol\$((Get-ADDomain | Select-Object Forest).Forest)\scripts\"
                         Copy-Item -Path "$($args[0])\StarterGPOs" -Recurse -Destination "$($args[1])\Sysvol\$((Get-ADDomain | Select-Object Forest).Forest)\StarterGPOs\"
                     }
@@ -168,11 +168,12 @@ function Run-GPOBackup {
     $INFO | Out-File -FilePath $BackupFolder\Log.txt -Append
 
 }
+
 # SIG # Begin signature block
 # MIIOgwYJKoZIhvcNAQcCoIIOdDCCDnACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUvdVZBNnWWLOHQzKkfslW8OuG
-# n2+gggvOMIIFvDCCA6SgAwIBAgITHgAAAAjRvX7DjspE9AAAAAAACDANBgkqhkiG
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUANPc4BclowumEUQLBD8qFtBY
+# 6IugggvOMIIFvDCCA6SgAwIBAgITHgAAAAjRvX7DjspE9AAAAAAACDANBgkqhkiG
 # 9w0BAQsFADB1MRMwEQYKCZImiZPyLGQBGRYDZWR1MRQwEgYKCZImiZPyLGQBGRYE
 # d2lzYzETMBEGCgmSJomT8ixkARkWA3NzYzETMBEGCgmSJomT8ixkARkWA2FkczEe
 # MBwGA1UEAxMVU1NDQ1Jvb3RDZXJ0QXV0aG9yaXR5MB4XDTE4MTIxMTIxMTY1NFoX
@@ -240,11 +241,11 @@ function Run-GPOBackup {
 # ZAEZFgNhZHMxEDAOBgNVBAMTB1NTQ0MgQ0ECExkAAC+CL8Bdd96Mu0MAAQAAL4Iw
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFNFGDNQuWZAiStJ/AQDbIoctR1A8MA0GCSqGSIb3DQEB
-# AQUABIIBAIRza//4O8jbkH3vpRjXo1+pDHnFqhAkCBK+ny/yyGB6A4pzveFcgZcz
-# RHceeq7Pk23J4ag9uR7bBkyjAp7LKSRY2NTd17GEE04ot5Rcf/NefJ2RnLN+NOHh
-# aYfggRGcI0MfXXSWWcrKFTC7EaO87XOcdfy/wCoHC0TilmbK+su6DMk4nmIjaUzN
-# gougbzuWbG4wOp7+GxHSkbQojm48A1zMJDJ/5XA3HBjZCqXFrz+c+OzlRb11rbQv
-# k+b6fArRGtmWKvpNKGydlO3+TKisxBNEUZrDknX2spHUo1dZiN4XaVfMRo/bdcbz
-# Q2kxjKB3oZVJcPomocGZxUiYhlD/ceA=
+# IwYJKoZIhvcNAQkEMRYEFE/wys4QZGMqEnRE5m1o07yJNeMjMA0GCSqGSIb3DQEB
+# AQUABIIBABoJfqpzJRkaeHe9ujRK/6mdhI8PDfaAw475kkGJZSaamI6ti70a+EHZ
+# 3tO5ZhmxIbPiiqdr6lSqIoi7uMpUpkSOwWmYPx68SlmT6Ttfv8wVPN5HU7I7v7ta
+# nxXYMDVpwNOEC/vvyWWTZm7ycF6bZsc1alr2EW5Y9t42AZWwdzKbSdHU7qrrmHYP
+# dDMvRCwZFRek8zcSHPFCauDU6KFFdTncYHsWWpuBo6KTFlzQz0/3XjW+fIZrZlxW
+# C4TrdOnOitwigf527/25UWnz3IlnYG2uaXsEOPAVSqevXeQGzWqubEFK1/Ih8zNx
+# kXiC1h4N9OwucghqRITydXsSfrMOYOk=
 # SIG # End signature block
