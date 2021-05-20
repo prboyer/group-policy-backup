@@ -20,13 +20,10 @@ Run-GPOBackup [-BackupFolder] <String> [[-Domain] <String>] [-BackupsToKeep] <In
 ```
 
 ## DESCRIPTION
-The script runs BackUp_GPOs.ps1 and Get-GPLinks.ps1 externally to generate additional backup content.
-The script will backup all GPOs in the domain, as well as HTML
-reports for each GPO indicating what they do.
-Further, a CSV report is included.
-The GPO linkage to OUs is also included in both CSV and TXT reports.
-The idea is that this backup is
-all-encompassing and would constitue a disaster recovery restore.
+The script runs BackUp_GPOs.ps1 and Get-GPLinks.ps1 externally to generate additional backup content. The script will backup all GPOs in the domain, as well as HTML
+reports for each GPO indicating what they do. Further, a CSV report is included. The GPO linkage to OUs is also included in both CSV and TXT reports. 
+The script also grabs a copy of the domain SYSVOL unless the -SkipSysvol parameter is supplied.
+The idea is that this backup is all-encompassing and would constitue a disaster recovery restore.
 
 ## EXAMPLES
 
@@ -81,6 +78,21 @@ Aliases:
 Required: True
 Position: 3
 Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SkipSysvol
+Parameter that tells the script to forego backing up the domain SYSVOL elements (PolicyDefiniitions, StarterGPOs, and scripts)
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
