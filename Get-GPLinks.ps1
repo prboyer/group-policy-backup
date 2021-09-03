@@ -62,6 +62,7 @@ function Get-GPLinks {
     )
     #Requires -Module GroupPolicy
     #Requires -Module ActiveDirectory
+    #Requires -Version 5.1
 
     # Import module for determining GPO Links. Evaluate if the module is already loaded. Perform error handling if the module cannot be located
     try{
@@ -221,17 +222,16 @@ function Get-GPLinks {
         }else{
             # Report GPOs linked to each OU
             $OUList | ForEach-Object {
-                # Variable to store the output from traversing each OU and getting link details
-                [String]$DetailOutput = "";
-
-                Write-Output "$($_.DistinguishedName)" -OutVariable DetailOutput; 
-                Write-Output $FORMAT_STRING.Substring(0,($_.DistinguishedName.Length))
                 
-                Get-GPLink -Path $_.DistinguishedName | Select-Object DisplayName, LinkEnabled, Enforced, BlockInheritance,GUID | Format-Table -AutoSize | Out-String -Width 4096 | Tee-Object -FilePath $OutputPath -Append 
-
-                # Write the contents of $DetailOutput & $DetailTable to the file represented by the parameter $Path 
+                # Write to the file represented by the parameter $Path 
                 try{
-                    Out-File -FilePath $OutputPath -InputObject $DetailOutput -NoNewline -Append
+                     # Output the header for the OU name
+                    Tee-Object -InputObject $($_.DistinguishedName) -FilePath $OutputPath -Append
+                    Tee-Object -InputObject $($FORMAT_STRING.Substring(0,($_.DistinguishedName.Length))) -FilePath $OutputPath -Append
+                
+                    # Output the table of linked policies
+                    Tee-Object -InputObject $(Get-GPLink -Path $_.DistinguishedName | Select-Object DisplayName, LinkEnabled, Enforced, BlockInheritance,GUID | Format-Table -AutoSize | Out-String -Width 4096) -FilePath $OutputPath -Append
+    
                 }catch [System.Management.Automation.ParameterBindingException] {
                     
                     # Perform silent error handling if the file cannot be generated. Likely because $Path was not supplied. 
