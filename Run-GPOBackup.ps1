@@ -108,6 +108,9 @@ function Run-GPOBackup {
     # Start GPO Backup Job (takes parameters in positional order only)
     Write-Information ("`n{0}`tBegin local background job: BackupJob - Executes BackUp_GPOS.ps1 `n`t`tBacking up GPOs to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
     $BackupJob = Start-Job -Name "BackupJob" -FilePath $global:BACKUP_GPOS -ArgumentList $BackupDomain,$Temp
+
+    # Wait for the backup job to complete before proceeding
+    Wait-Job -Job $BackupJob
     
     # Rename the generated XML file to avoid confusion when looking at GPO restore documentation
     Rename-Item -Path $(Get-Item -Path "$Temp\GpoDetails.xml").Fullname -NewName "manifest.xml"
