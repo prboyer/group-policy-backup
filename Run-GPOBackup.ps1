@@ -87,7 +87,7 @@ function Run-GPOBackup {
         }
     
     ##
-    Write-Information $DATE -InformationVariable +INFO
+    Write-Information "$DATE`n********************************`n" -InformationVariable +INFO
 
     # Assign value to the $BackupDomain variable if none supplied at runtime
     [String]$global:BackupDomain;
@@ -98,7 +98,7 @@ function Run-GPOBackup {
     }
 
     # Create a new temp folder to hold the backup files
-    Write-Information ("{0}`tCreate temporary folder at {1}" -f $LOGDATE,"$BackupFolder\Temp")
+    Write-Information ("`n{0}`tCreate temporary folder at {1}" -f $LOGDATE,"$BackupFolder\Temp")
     New-Item -Path $BackupFolder -Name "Temp" -ItemType Directory | Out-Null
     $Temp = Get-Item -Path "$BackupFolder\Temp"
 
@@ -106,11 +106,11 @@ function Run-GPOBackup {
     $Temp.Attributes = "Hidden"
 
     # Start GPO Backup Job (takes parameters in positional order only)
-    Write-Information ("{0}`tBegin local background job: BackupJob - Executes BackUp_GPOS.ps1 `n`t`tBacking up GPOs to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
+    Write-Information ("`n{0}`tBegin local background job: BackupJob - Executes BackUp_GPOS.ps1 `n`t`tBacking up GPOs to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
     $BackupJob = Start-Job -Name "BackupJob" -FilePath $global:BACKUP_GPOS -ArgumentList $BackupDomain,$Temp 
   
     # Start GPO Links Job
-    Write-Information ("{0}`tBegin local background job: LinksJob - Executes Get-GPLinks.ps1 `n`t`tBacking up Links to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
+    Write-Information ("`n{0}`tBegin local background job: LinksJob - Executes Get-GPLinks.ps1 `n`t`tBacking up Links to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
     $LinksJob = Start-Job -Name "LinksJob" -ArgumentList $Temp -ScriptBlock {
         # Import required module
         . $using:GET_GPLINKS
@@ -123,12 +123,12 @@ function Run-GPOBackup {
         # Only perform the Sysvol backup if the -SkipSysvol parameter is not supplied
         if(-not $SkipSysvol){
             # Begin the Sysvol backup
-            Write-Information ("{0}`tBegin local background job: SysvolJob - Backs up a copy of important files in Sysvol `n`t`tBacking up Sysvol to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
+            Write-Information ("`n{0}`tBegin local background job: SysvolJob - Backs up a copy of important files in Sysvol `n`t`tBacking up Sysvol to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
             [String]$DomainController = $(Get-AdDomainController).hostname
             [String]$Sysvol = "\\$DomainController\Sysvol\$((Get-ADDomain | Select-Object Forest).Forest)"
 
                 # Write out counts of objects in Sysvol dirs
-                Write-Information ("{0}`tCount objects found in Sysvol:`n`t`tPolicyDefinitions = {1} items `n`t`tScripts = {2} items `n`t`tStarterGPOs = {3} items" -f $LOGDATE,(Get-ChildItem -Path "$Sysvol\Policies\PolicyDefinitions" -Recurse | Measure-Object).Count,(Get-ChildItem -Path "$Sysvol\scripts" -Recurse | Measure-Object).Count,(Get-ChildItem -Path "$Sysvol\StarterGPOs" -Recurse | Measure-Object).Count) -InformationAction Continue -InformationVariable +INFO
+                Write-Information ("`n{0}`tCount objects found in Sysvol:`n`t`tPolicyDefinitions = {1} items `n`t`tScripts = {2} items `n`t`tStarterGPOs = {3} items" -f $LOGDATE,(Get-ChildItem -Path "$Sysvol\Policies\PolicyDefinitions" -Recurse | Measure-Object).Count,(Get-ChildItem -Path "$Sysvol\scripts" -Recurse | Measure-Object).Count,(Get-ChildItem -Path "$Sysvol\StarterGPOs" -Recurse | Measure-Object).Count) -InformationAction Continue -InformationVariable +INFO
 
                 # Start running the backup job
                 $SysvolJob = Start-Job -Name "SysvolJob" -ArgumentList $Sysvol,$Temp -ScriptBlock {
@@ -144,7 +144,7 @@ function Run-GPOBackup {
                 }
         }  else {
             # Write to the log file that Sysvol backup was not performed
-            Write-Information ("{0}`tSkipping the Sysvol backup as the '-SkipSysvol' parameter was supplied at runtime." -f $DATE) -InformationVariable +INFO
+            Write-Information ("`n{0}`tSkipping the Sysvol backup as the '-SkipSysvol' parameter was supplied at runtime." -f $DATE) -InformationVariable +INFO
         }
 
     # Wait for the backup jobs to finish, then zip up the files
@@ -172,7 +172,7 @@ function Run-GPOBackup {
 
     # Cleanup old Backups
     # Perform cleanup of older backups if the directory has more than 10 archives
-    Write-Information ("{0}`tPerform cleanup of older backups if the directory has more than $KEEP archives" -f $LOGDATE) -InformationVariable +INFO
+    Write-Information ("`n{0}`tPerform cleanup of older backups if the directory has more than $KEEP archives" -f $LOGDATE) -InformationVariable +INFO
     if ((Get-ChildItem $backupFolder -Filter "*.zip"| Measure-Object).Count -gt $KEEP+1) {
    
         # Delete backups older than the specified retention period, however keep a minimum of 5 recent backups.
