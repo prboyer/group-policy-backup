@@ -21,6 +21,9 @@ function Run-GPOBackup {
     .PARAMETER SkipSysvol
     Parameter that tells the script to forego backing up the domain SYSVOL elements (PolicyDefiniitions, StarterGPOs, and scripts)
 
+    .PARAMETER NoZip
+    Parameter that tells the script to forego zipping the results into an archive
+
     .EXAMPLE
     Run-GPOBackup -BackupFolder C:\Backups -BackupsToKeep 10
 
@@ -51,7 +54,10 @@ function Run-GPOBackup {
         $BackupsToKeep,
         [Parameter()]
         [switch]
-        $SkipSysvol
+        $SkipSysvol,
+        [Parameter()]
+        [swtich]
+        $NoZip
     )
     #Requires -Module ActiveDirectory
     
@@ -148,12 +154,21 @@ function Run-GPOBackup {
     }else{
         Wait-Job -Job $SysvolJob,$LinksJob,$BackupJob | Out-Null
     }
-    Write-Information ("{0}`tBegin zipping files in {1} to archive at {2}" -f $LOGDATE,$Temp,"$BackupFolder\$DATE.zip") -InformationVariable +INFO
+
+    # If the -NoZip parameter is specified, then do not zip the results into an archive
+    if ($NoZip) {
+        #Rename the Folder and make visible
+        Rename-Item -Path $Temp -NewName $DATE -Force
+        $Temp.Attributes = "Normal";
+
+    }else{
+        Write-Information ("`n{0}`tBegin zipping files in {1} to archive at {2}" -f $LOGDATE,$Temp,"$BackupFolder\$DATE.zip") -InformationVariable +INFO
     Compress-Archive -Path "$Temp\*" -DestinationPath "$BackupFolder\$DATE.zip"
 
     # Delete Temp folder
-    Write-Information ("{0}`tDelete Temp Folder ({1})" -f $LOGDATE,$Temp) -InformationVariable +INFO
+        Write-Information ("`n{0}`tDelete Temp Folder ({1})" -f $LOGDATE,$Temp) -InformationVariable +INFO
     Remove-Item -Path $Temp -Recurse -Force
+    }
 
     # Cleanup old Backups
     # Perform cleanup of older backups if the directory has more than 10 archives
