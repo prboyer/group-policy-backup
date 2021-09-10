@@ -56,7 +56,7 @@ function Run-GPOBackup {
         [switch]
         $SkipSysvol,
         [Parameter()]
-        [swtich]
+        [switch]
         $NoZip
     )
     #Requires -Module ActiveDirectory
