@@ -109,6 +109,25 @@ function Run-GPOBackup {
     Write-Information ("`n{0}`tBegin local background job: BackupJob - Executes BackUp_GPOS.ps1 `n`t`tBacking up GPOs to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
     $BackupJob = Start-Job -Name "BackupJob" -FilePath $global:BACKUP_GPOS -ArgumentList $BackupDomain,$Temp 
   
+    # Rename the generated XML file to avoid confusion when looking at GPO restore documentation
+    Rename-Item -Path $(Get-Item -Path "$Temp\GpoDetails.xml").Fullname -NewName "manifest.xml"
+
+    # Analyze results
+    [Int]$BackupJobResults = (Get-ChildItem -Path $Temp -Filter "{*}" | Measure-Object).Count
+    [Int]$GPOsInDomainResults = (Get-GPO -All | Measure-Object).Count
+
+    Write-Information ("`n{0}`t{1} Objects Backed Up. {2} Objects Found in the Domain" -f $LOGDATE, $BackupJobResults, $GPOsInDomainResults) -InformationAction Continue -InformationVariable +INFO
+
+    # Determine what hasn't been backed up
+    if ($BackupJobResults -lt $GPOSInDomainResults) {
+        # Import the manifest file that correlates the GPO GUIDs and the GUIDs of the backup folders
+        $BackupXML = Import-Clixml -Path "$Temp\manifest.xml"
+
+        # Now determine what is missing
+        Write-Information ("`n{0]`tThe following policies have not been included in the backup.")
+        Get-GPO -All | Select-Object DisplayName, ID | Where-Object{$_.ID -notin $($BackupXML |Select-Object GPOGUID).GPOGUID}
+    }
+
     # Start GPO Links Job
     Write-Information ("`n{0}`tBegin local background job: LinksJob - Executes Get-GPLinks.ps1 `n`t`tBacking up Links to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
     $LinksJob = Start-Job -Name "LinksJob" -ArgumentList $Temp -ScriptBlock {
