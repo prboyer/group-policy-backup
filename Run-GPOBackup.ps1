@@ -111,9 +111,12 @@ function Run-GPOBackup {
 
     # Wait for the backup job to complete before proceeding
     Wait-Job -Job $BackupJob
+
+    # Get BackupFolder within the Temp dir
+    $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date).Month)_$((Get-Date).Day)_*").Name
     
     # Rename the generated XML file to avoid confusion when looking at GPO restore documentation
-    Rename-Item -Path $(Get-Item -Path "$Temp\GpoDetails.xml").Fullname -NewName "manifest.xml"
+    Rename-Item -Path $(Get-Item -Path "$Temp\$SubTemp\GpoDetails.xml").Fullname -NewName "manifest.xml"
 
     # Analyze results
     [Int]$BackupJobResults = (Get-ChildItem -Path $Temp -Filter "{*}" | Measure-Object).Count
