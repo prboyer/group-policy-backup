@@ -116,7 +116,7 @@ function Run-GPOBackup {
     $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date).Day)_*").Name
     
     # Rename the generated XML file to avoid confusion when looking at GPO restore documentation
-    Rename-Item -Path $(Get-Item -Path "$Temp\$SubTemp\GpoDetails.xml").Fullname -NewName "manifest.xml"
+    Rename-Item -Path "$Temp\$SubTemp\GpoDetails.xml" -NewName "manifest.xml"
 
     # Analyze results
     [Int]$BackupJobResults = (Get-ChildItem -Path $Temp -Filter "{*}" | Measure-Object).Count
@@ -131,7 +131,7 @@ function Run-GPOBackup {
 
         # Now determine what is missing
         Write-Information ("`n{0]`tThe following policies have not been included in the backup.")
-        Get-GPO -All | Select-Object DisplayName, ID | Where-Object{$_.ID -notin $($BackupXML |Select-Object GPOGUID).GPOGUID}
+        Get-GPO -All | Select-Object DisplayName, ID | Where-Object{$_.ID -notin $($BackupXML |Select-Object GPOGUID).GPOGUID} | Format-Table -AutoSize -InformationVariable +INFO
     }
 
     # Start GPO Links Job
