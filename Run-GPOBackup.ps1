@@ -107,8 +107,8 @@ function Run-GPOBackup {
 
     # Start GPO Backup Job (takes parameters in positional order only)
     Write-Information ("`n{0}`tBegin local background job: BackupJob - Executes BackUp_GPOS.ps1 `n`t`tBacking up GPOs to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
-    $BackupJob = Start-Job -Name "BackupJob" -FilePath $global:BACKUP_GPOS -ArgumentList $BackupDomain,$Temp 
-  
+    $BackupJob = Start-Job -Name "BackupJob" -FilePath $global:BACKUP_GPOS -ArgumentList $BackupDomain,$Temp
+    
     # Rename the generated XML file to avoid confusion when looking at GPO restore documentation
     Rename-Item -Path $(Get-Item -Path "$Temp\GpoDetails.xml").Fullname -NewName "manifest.xml"
 
@@ -182,13 +182,13 @@ function Run-GPOBackup {
 
     }else{
         Write-Information ("`n{0}`tBegin zipping files in {1} to archive at {2}" -f $LOGDATE,$Temp,"$BackupFolder\$DATE.zip") -InformationVariable +INFO
-    Compress-Archive -Path "$Temp\*" -DestinationPath "$BackupFolder\$DATE.zip"
+        Compress-Archive -Path "$Temp\*" -DestinationPath "$BackupFolder\$DATE.zip"
 
-    # Delete Temp folder
+        # Delete Temp folder
         Write-Information ("`n{0}`tDelete Temp Folder ({1})" -f $LOGDATE,$Temp) -InformationVariable +INFO
-    Remove-Item -Path $Temp -Recurse -Force
+        Remove-Item -Path $Temp -Recurse -Force
     }
-
+    
     # Cleanup old Backups
     # Perform cleanup of older backups if the directory has more than 10 archives
     Write-Information ("`n{0}`tPerform cleanup of older backups if the directory has more than $KEEP archives" -f $LOGDATE) -InformationVariable +INFO
@@ -202,12 +202,11 @@ function Run-GPOBackup {
     $INFO | Out-File -FilePath $BackupFolder\Log.txt -Append
 
 }
-
 # SIG # Begin signature block
 # MIIOgwYJKoZIhvcNAQcCoIIOdDCCDnACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUANPc4BclowumEUQLBD8qFtBY
-# 6IugggvOMIIFvDCCA6SgAwIBAgITHgAAAAjRvX7DjspE9AAAAAAACDANBgkqhkiG
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUezumtB5aSozji5XyCAe3uihr
+# yG+gggvOMIIFvDCCA6SgAwIBAgITHgAAAAjRvX7DjspE9AAAAAAACDANBgkqhkiG
 # 9w0BAQsFADB1MRMwEQYKCZImiZPyLGQBGRYDZWR1MRQwEgYKCZImiZPyLGQBGRYE
 # d2lzYzETMBEGCgmSJomT8ixkARkWA3NzYzETMBEGCgmSJomT8ixkARkWA2FkczEe
 # MBwGA1UEAxMVU1NDQ1Jvb3RDZXJ0QXV0aG9yaXR5MB4XDTE4MTIxMTIxMTY1NFoX
@@ -275,11 +274,11 @@ function Run-GPOBackup {
 # ZAEZFgNhZHMxEDAOBgNVBAMTB1NTQ0MgQ0ECExkAAC+CL8Bdd96Mu0MAAQAAL4Iw
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFE/wys4QZGMqEnRE5m1o07yJNeMjMA0GCSqGSIb3DQEB
-# AQUABIIBABoJfqpzJRkaeHe9ujRK/6mdhI8PDfaAw475kkGJZSaamI6ti70a+EHZ
-# 3tO5ZhmxIbPiiqdr6lSqIoi7uMpUpkSOwWmYPx68SlmT6Ttfv8wVPN5HU7I7v7ta
-# nxXYMDVpwNOEC/vvyWWTZm7ycF6bZsc1alr2EW5Y9t42AZWwdzKbSdHU7qrrmHYP
-# dDMvRCwZFRek8zcSHPFCauDU6KFFdTncYHsWWpuBo6KTFlzQz0/3XjW+fIZrZlxW
-# C4TrdOnOitwigf527/25UWnz3IlnYG2uaXsEOPAVSqevXeQGzWqubEFK1/Ih8zNx
-# kXiC1h4N9OwucghqRITydXsSfrMOYOk=
+# IwYJKoZIhvcNAQkEMRYEFL1x09J2OeMJVKawSRonNxQHzT5wMA0GCSqGSIb3DQEB
+# AQUABIIBANBk+XeEZQ0oY46i7qrR1ER/U4DeHNP8LPB5BF8/xTQBMlkEC9lh6CM0
+# 8cMXE0t2fL/CC/Qbo+VDeaxamF3vvWU3wns7CsF/rhUzOXSKTpz0ktzj8ROvY6uH
+# rcb8ZBv2/nZuzy9qNlezz3SJMVdPdFLjhrp/mrdnWQTsD+WEFiwpML/Jstz3kON1
+# 33xYvgGC9QN0YZZdHi0EbiQNlKdEWbvTBlplhNU+1kQuDI7cTKND7SpwKFTu6ehg
+# /bLh0IEjZ27pI55Qp07Je7QN402aOOxfNRyvi+A6cg0enGiA0KPf+/wgKKtSGxSx
+# CoUIjeCWIKJEomfYAc+30aNwaKhAHKs=
 # SIG # End signature block
