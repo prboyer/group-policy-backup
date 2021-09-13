@@ -119,7 +119,7 @@ function Run-GPOBackup {
     Start-Sleep -Seconds 3
 
     if(Test-Path "$Temp\$SubTemp\manifest.xml"){
-        $Manifest = (Get-Item -Path "$Temp\$SubTemp\manifest.xml");
+        $Manifest = (Get-ChildItem -Path "$Temp\$SubTemp" -File -Force -Filter "manifest*").FullName;
         $Manifest.Attributes = "Normal";
     }
 
