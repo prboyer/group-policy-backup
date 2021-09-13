@@ -114,7 +114,7 @@ function Run-GPOBackup {
     Start-Sleep -Seconds 5
 
     # Get BackupFolder within the Temp dir
-    $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date -Format "DD"))_*").Name
+    $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date -Format "dd"))_*").Name
     
     # Make the Manifest XML file visible
     (Get-Item -Path "$Temp\$SubTemp\manifest.xml").Attributes = "Normal";
