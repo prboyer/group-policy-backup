@@ -111,16 +111,19 @@ function Run-GPOBackup {
 
     # Wait for the backup job to complete before proceeding
     Wait-Job -Job $BackupJob
-    Start-Sleep -Seconds 5
 
     # Get BackupFolder within the Temp dir
     $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date -Format "dd"))_*").Name
     
     # Make the Manifest XML file visible
-    (Get-Item -Path "$Temp\$SubTemp\manifest.xml").Attributes = "Normal";
+    Start-Sleep -Seconds 3
+
+    if(Test-Path "$Temp\$SubTemp\manifest.xml"){
+        (Get-Item -Path "$Temp\$SubTemp\manifest.xml").Attributes = "Normal";
+    }
 
     # Analyze results
-    [Int]$BackupJobResults = (Get-ChildItem -Path $Temp -Filter "{*}" | Measure-Object).Count
+    [Int]$BackupJobResults = (Get-ChildItem -Path "$Temp\$SubTemp" -Filter "{*}" | Measure-Object).Count
     [Int]$GPOsInDomainResults = (Get-GPO -All | Measure-Object).Count
 
     Write-Information ("`n{0}`t{1} Objects Backed Up. {2} Objects Found in the Domain" -f $LOGDATE, $BackupJobResults, $GPOsInDomainResults) -InformationAction Continue -InformationVariable +INFO
