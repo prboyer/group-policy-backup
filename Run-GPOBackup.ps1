@@ -114,7 +114,7 @@ function Run-GPOBackup {
     Start-Sleep -Seconds 5
 
     # Get BackupFolder within the Temp dir
-    $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date).Day)_*").Name
+    $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date -Format "DD"))_*").Name
     
     # Make the Manifest XML file visible
     (Get-Item -Path "$Temp\$SubTemp\manifest.xml").Attributes = "Normal";
@@ -128,7 +128,7 @@ function Run-GPOBackup {
     # Determine what hasn't been backed up
     if ($BackupJobResults -lt $GPOSInDomainResults) {
         # Import the manifest file that correlates the GPO GUIDs and the GUIDs of the backup folders
-        $BackupXML = Import-Clixml -Path "$Temp\GPODetails.xml"
+        $BackupXML = Import-Clixml -Path "$Temp\$SubTemp\GPODetails.xml"
 
         # Now determine what is missing
         Write-Information ("`n{0]`tThe following policies have not been included in the backup.")
@@ -187,7 +187,7 @@ function Run-GPOBackup {
         $Temp.Attributes = "Normal";
 
         #Rename the Folder
-        Rename-Item -Path $Temp -NewName $DATE -Force
+        #Rename-Item -Path $Temp -NewName $DATE -Force
        
     }else{
         Write-Information ("`n{0}`tBegin zipping files in {1} to archive at {2}" -f $LOGDATE,$Temp,"$BackupFolder\$DATE.zip") -InformationVariable +INFO
