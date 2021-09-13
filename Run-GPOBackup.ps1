@@ -183,10 +183,12 @@ function Run-GPOBackup {
 
     # If the -NoZip parameter is specified, then do not zip the results into an archive
     if ($NoZip) {
-        #Rename the Folder and make visible
-        Rename-Item -Path $Temp -NewName $DATE -Force
+        # Make the folder visible
         $Temp.Attributes = "Normal";
 
+        #Rename the Folder
+        Rename-Item -Path $Temp -NewName $DATE -Force
+       
     }else{
         Write-Information ("`n{0}`tBegin zipping files in {1} to archive at {2}" -f $LOGDATE,$Temp,"$BackupFolder\$DATE.zip") -InformationVariable +INFO
         Compress-Archive -Path "$Temp\*" -DestinationPath "$BackupFolder\$DATE.zip"
