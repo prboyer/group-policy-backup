@@ -71,6 +71,9 @@ function Run-GPOBackup {
         # Path to the location of Get-GPLinks.ps1
         [String]$global:GET_GPLINKS = "$PSScriptRoot\Get-GPLinks.ps1"
 
+        # Path to the location of the Get-GPOUnlinked.ps1 script
+        [String]$global:GET_GPO_UNLINKED = "$PSScriptRoot\Get-GPOUnlinked.ps1"
+
         # Variable for today's date
         [String]$global:DATE = Get-Date -Format FileDateTimeUniversal
         
@@ -149,6 +152,16 @@ function Run-GPOBackup {
         Get-GPLinks -BothReport -Path "$args"
     }
     
+    # Start GPO Unlinked Report Job
+    Write-Information ("{0}`tBegin local background job: UnlinkedJob - Executes Get-GPOUnlinked.ps1 `n`t`tBacking up Unlinked Report to {1}" -f $LOGDATE,$Temp) -InformationVariable +INFO -InformationAction Continue
+    $UnlinkedJob = Start-Job -Name "UnlinkedJob" -ArgumentList $Temp -ScriptBlock {
+        # Import required module
+        . $using:GET_GPO_UNLINKED
+
+        # Run the Script
+        Get-GPOUnlinked -FilePath "$args\UnlinkedReport.txt"
+    }
+    
     <# SysVol Backup #>
         # Only perform the Sysvol backup if the -SkipSysvol parameter is not supplied
         if(-not $SkipSysvol){
@@ -215,6 +228,7 @@ function Run-GPOBackup {
     $INFO | Out-File -FilePath $BackupFolder\Log.txt -Append
 
 }
+
 
 # SIG # Begin signature block
 # MIIOgwYJKoZIhvcNAQcCoIIOdDCCDnACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
