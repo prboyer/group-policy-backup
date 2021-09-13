@@ -111,11 +111,13 @@ function Run-GPOBackup {
 
     # Wait for the backup job to complete before proceeding
     Wait-Job -Job $BackupJob
+    Start-Sleep -Seconds 5
 
     # Get BackupFolder within the Temp dir
     $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date).Day)_*").Name
     
     # Rename the generated XML file to avoid confusion when looking at GPO restore documentation
+    Write-Host "$Temp\$SubTemp\GpoDetails.xml" -ForegroundColor Magenta
     Rename-Item -Path "$Temp\$SubTemp\GpoDetails.xml" -NewName "manifest.xml"
 
     # Analyze results
