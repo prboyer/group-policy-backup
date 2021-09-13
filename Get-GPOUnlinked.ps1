@@ -37,7 +37,7 @@ This will email the results to bbadger@wisc.edu
     Date: 9-3-2021
 #>
     param (
-        [Parameter()]
+        [Parameter(ParameterSetName="FilePath")]
         [String]
         $FilePath,
         [Parameter(ParameterSetName="Email")]
@@ -235,7 +235,7 @@ This will email the results to bbadger@wisc.edu
         # Then sort the results by their creation time and group them by owner. The final results are then written to a file.
         Get-GPUnlinked | Where-Object {!$_.Linked} | Select-Object DisplayName, @{Name="Owner";Expression={(Get-GPO -GUID $_.Name.Trim('{}').Trim()).Owner}}, @{Name="DateModified";Expression={$_.whenChanged}}, @{Name="DateCreated"; Expression={$_.whenCreated}}, @{Name="Description";Expression={(Get-GPO -GUID $_.Name.Trim('{}')).Description}} | Sort-Object DateCreated | Group-Object Owner | ForEach-Object{
                 Tee-Object -InputObject $_.Name -File $FilePath -Append
-                Tee-Object -InputObject $($_ | Select-Object -ExpandProperty Group | Format-Table -AutoSize | Out-String) -File $FilePath -Append
+                Tee-Object -InputObject $($_ | Select-Object -ExpandProperty Group | Format-Table -AutoSize | Out-String -Width 640) -File $FilePath -Append
         }
 
         <# Prepare to send the email with the results #>
@@ -271,11 +271,12 @@ This will email the results to bbadger@wisc.edu
     }
 }
 
+
 # SIG # Begin signature block
 # MIIOgwYJKoZIhvcNAQcCoIIOdDCCDnACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUGXtlOwKn1QA2uR9OD89fx35k
-# pfegggvOMIIFvDCCA6SgAwIBAgITHgAAAAjRvX7DjspE9AAAAAAACDANBgkqhkiG
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUVvLNQ75zstgpiz0vqVb3LpBN
+# UHGgggvOMIIFvDCCA6SgAwIBAgITHgAAAAjRvX7DjspE9AAAAAAACDANBgkqhkiG
 # 9w0BAQsFADB1MRMwEQYKCZImiZPyLGQBGRYDZWR1MRQwEgYKCZImiZPyLGQBGRYE
 # d2lzYzETMBEGCgmSJomT8ixkARkWA3NzYzETMBEGCgmSJomT8ixkARkWA2FkczEe
 # MBwGA1UEAxMVU1NDQ1Jvb3RDZXJ0QXV0aG9yaXR5MB4XDTE4MTIxMTIxMTY1NFoX
@@ -343,11 +344,11 @@ This will email the results to bbadger@wisc.edu
 # ZAEZFgNhZHMxEDAOBgNVBAMTB1NTQ0MgQ0ECExkAAC+CL8Bdd96Mu0MAAQAAL4Iw
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFFYhCCTEoDCkjna+w8X8MRCfiQNlMA0GCSqGSIb3DQEB
-# AQUABIIBAGeNSAbsD75podW9v702ZotijNn84HSuRaHdQRHCqKnziW69ZTamrDnp
-# aCXFOV2A0+0aUD7bP9Q6bLpNmFyEz+BeArpforZwY7LNfNHsWSl9zabm/pvQQAOB
-# weAKtRV5uAqR4PCbNUhgGork0F1oe9unvywVcU9Oj1Kvvor00d3rEjFtL4OAFQ48
-# SG1R1pY8Uwy6flcJpWCl85kQ0nH+Zn0Tvdqd2R0qge/QtNtNVMcqjawSE8918vjK
-# ahpQmFH8XWkvwPxan3pLG+Z2X6oN9s7d/hg91EZ7uiP+/O0jrm/TJLqhVZ1Ey3qF
-# Z2hnPHHv0t8aR1Pc5LTcySrY+2NT6IM=
+# IwYJKoZIhvcNAQkEMRYEFGRLFOjM3vpOd6N0lY/Iv7cLEP72MA0GCSqGSIb3DQEB
+# AQUABIIBAJpM6nsllET7yNJR7ePC+vt9f9M99aGlhEY4QxEnR8KjBPI+M2V43kdU
+# yBs2ysE7XgEcufu9bW7FXzJdTcI5hPZIzndEDaxrhho4YH1/TlW75/nU4LXEOfy2
+# 9EmInqNNo8wcrQY5WAsST+f4CvXh+c1XRqpg1hCybK/1TgMWMCzPHgYHQQvxwfYL
+# AlOaDyoYZ6ABkpInbYiTEhot9j7U9K6OYtVjXBDVCRbeQaps5sA/6yp7MVSolpqP
+# sndaJwKNFpjXHnhg6J3UewSz/QcVyGWE2AY/l2gas0u9/A4fZbw0S2wm2FW2qg5O
+# m/I44S4/lhMRN0GKDqXg8BRbWgUxsFA=
 # SIG # End signature block
