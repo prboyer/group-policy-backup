@@ -119,14 +119,15 @@ function Run-GPOBackup {
     Start-Sleep -Seconds 3
 
     if(Test-Path "$Temp\$SubTemp\manifest.xml"){
-        (Get-Item -Path "$Temp\$SubTemp\manifest.xml").Attributes = "Normal";
+        $Manifest = (Get-Item -Path "$Temp\$SubTemp\manifest.xml");
+        $Manifest.Attributes = "Normal";
     }
 
     # Analyze results
     [Int]$BackupJobResults = (Get-ChildItem -Path "$Temp\$SubTemp" -Filter "{*}" | Measure-Object).Count
     [Int]$GPOsInDomainResults = (Get-GPO -All | Measure-Object).Count
 
-    Write-Information ("`n{0}`t{1} Objects Backed Up. {2} Objects Found in the Domain" -f $LOGDATE, $BackupJobResults, $GPOsInDomainResults) -InformationAction Continue -InformationVariable +INFO
+    Write-Information ("`n{0}`tResult: {1} Objects Backed Up. {2} Objects Found in the Domain." -f $LOGDATE, $BackupJobResults, $GPOsInDomainResults) -InformationAction Continue -InformationVariable +INFO
 
     # Determine what hasn't been backed up
     if ($BackupJobResults -lt $GPOSInDomainResults) {
@@ -190,7 +191,7 @@ function Run-GPOBackup {
         $Temp.Attributes = "Normal";
 
         #Rename the Folder
-        #Rename-Item -Path $Temp -NewName $DATE -Force
+        Rename-Item -Path $Temp -NewName $DATE -Force
        
     }else{
         Write-Information ("`n{0}`tBegin zipping files in {1} to archive at {2}" -f $LOGDATE,$Temp,"$BackupFolder\$DATE.zip") -InformationVariable +INFO
