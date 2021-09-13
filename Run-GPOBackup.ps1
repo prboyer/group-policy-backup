@@ -116,9 +116,8 @@ function Run-GPOBackup {
     # Get BackupFolder within the Temp dir
     $SubTemp = (Get-ChildItem -Path $Temp -Filter "$((Get-Date).Year)_$((Get-Date -Format "MM"))_$((Get-Date).Day)_*").Name
     
-    # Rename the generated XML file to avoid confusion when looking at GPO restore documentation
-    Write-Host "$Temp\$SubTemp\GpoDetails.xml" -ForegroundColor Magenta
-    Rename-Item -Path "$Temp\$SubTemp\GpoDetails.xml" -NewName "manifest.xml"
+    # Make the Manifest XML file visible
+    (Get-Item -Path "$Temp\$SubTemp\manifest.xml").Attributes = "Normal";
 
     # Analyze results
     [Int]$BackupJobResults = (Get-ChildItem -Path $Temp -Filter "{*}" | Measure-Object).Count
@@ -129,7 +128,7 @@ function Run-GPOBackup {
     # Determine what hasn't been backed up
     if ($BackupJobResults -lt $GPOSInDomainResults) {
         # Import the manifest file that correlates the GPO GUIDs and the GUIDs of the backup folders
-        $BackupXML = Import-Clixml -Path "$Temp\manifest.xml"
+        $BackupXML = Import-Clixml -Path "$Temp\GPODetails.xml"
 
         # Now determine what is missing
         Write-Information ("`n{0]`tThe following policies have not been included in the backup.")
